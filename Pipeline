@@ -1,0 +1,22 @@
+node 
+{
+    
+    stage('git checkout')
+    {
+        git credentialsId: 'asdevops29-git', url: 'https://github.com/asdevops29/war-test.git'
+    }
+    
+    stage('cod build & test')
+    {
+        //sh 'mvn clean package'
+        def mavenHome = tool name: 'maven-3', type: 'maven'
+        def mavenCMD = "${mavenHome}/bin/mvn" 
+        sh "${mavenCMD} clean package"
+    }
+    
+     stage('code deploy')
+     {
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-admin', path: '', url: 'http://localhost:8088')], contextPath: 'pipeline', war: '**/*.war'
+     }
+     
+}
